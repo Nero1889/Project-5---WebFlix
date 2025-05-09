@@ -1,35 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, {useEffect, useState} from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
+function TestAPIKey() {
+    const [status, setStatus] = useState("Loading...");
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React!</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    useEffect(() => {
+        const API_KEY = "a185d00309246af13fc09d5674ea20ee"; 
+        const API_URL = `https://api.themoviedb.org/3/configuration?api_key=${API_KEY}`;
+
+        fetch(API_URL)
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(`API Error: ${response.status} - ${data.status_message || "Something went wrong!"}`);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(`TMDb Configuration Data: ${data}`);
+            setStatus("API key is working correctly!");
+        })
+        .catch(error => {
+            console.error(`Error fetching configuration: ${error}`);
+            setStatus(`API key error: ${error.message}`);
+        });
+    }, []);
+
+    return (
+        <div>
+            <h1>Testing TMDb API Key</h1>
+            <p>{status}</p>
+        </div>
+    );
 }
 
-export default App
+export default TestAPIKey;
